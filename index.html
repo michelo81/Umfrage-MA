@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umfrage: Nachhaltige Finanzprodukte im Verkauf</title>
+<style>
+  :root {
+    --bg: #FBF7F0;
+    --card: #FFFFFF;
+    --ink: #2E3440;
+    --muted: #7A8494;
+    --line: #ECE6DA;
+    --accent: #F3A712;
+    --accent-ink: #5A3E00;
+    --radius: 18px;
+    --radius-sm: 12px;
+    --shadow: 0 8px 24px rgba(46, 52, 64, 0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 20px;
+    margin-bottom: 16px;
+  }
+  h1 { font-size: 22px; font-weight: 800; margin: 0 0 6px; }
+  .subtitle { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 14px; }
+  .intro-text { font-size: 14.5px; color: var(--ink); }
+  .intro-text p { margin: 0 0 10px; }
+  .intro-meta { font-size: 12.5px; color: var(--muted); margin-top: 14px; }
+  .gate-actions { display: flex; gap: 12px; margin-top: 18px; }
+  .gate-btn {
+    flex: 1; padding: 14px; border-radius: var(--radius-sm); border: 2px solid var(--line);
+    background: #fff; font-size: 15px; font-weight: 700; cursor: pointer; color: var(--ink);
+  }
+  .gate-btn:hover { border-color: var(--accent); }
+  .gate-btn.selected { border-color: var(--accent); background: #FFF4DD; color: var(--accent-ink); }
+
+  .q-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 16px; margin-bottom: 14px; }
+  .q-card.q-missing { border-color: #E0685B; }
+  .q-label { font-size: 14.5px; font-weight: 700; margin-bottom: 12px; }
+  .q-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt-btn {
+    padding: 9px 14px; border-radius: 999px; border: 1.5px solid var(--line);
+    background: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--ink);
+  }
+  .opt-btn:hover { border-color: var(--accent); }
+  .opt-btn.selected { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+  .q-missing-hint { font-size: 12px; color: #C0392B; margin-top: 8px; display: none; }
+  .q-card.q-missing .q-missing-hint { display: block; }
+
+  .submit-row { margin-top: 10px; text-align: center; }
+  .btn-submit {
+    padding: 14px 32px; border-radius: 999px; border: none; background: var(--ink); color: #fff;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+  }
+  .btn-submit:disabled { opacity: .5; cursor: default; }
+  .btn-link { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; text-decoration: underline; margin-top: 10px; }
+
+  .status-msg { text-align: center; font-size: 14px; color: var(--muted); margin-top: 10px; min-height: 18px; }
+  .status-msg.err { color: #C0392B; }
+
+  .exit-screen, .thanks-screen { text-align: center; padding: 10px 4px; }
+  .exit-emoji, .thanks-emoji { font-size: 42px; margin-bottom: 10px; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== Einleitung + Filterfrage ===== -->
+  <div class="card" id="introCard">
+    <h1>Ethik als Investitionskriterium?</h1>
+    <div class="subtitle">Der Einfluss von ESG-Kriterien (Environment, Social, Governance) auf Investitionsentscheidungen — eine empirische Untersuchung von Beratungs- und Verkaufsstrategien für fondsgebundene Lebensversicherungen.</div>
+    <div class="intro-text">
+      <p>Diese Umfrage ist Teil einer Masterarbeit (MBA). Die Teilnahme ist freiwillig, die Beantwortung erfolgt vollständig anonym — es werden zu keinem Zeitpunkt Name, E-Mail-Adresse oder andere persönliche Daten erfasst. Die Auswertung erfolgt ausschließlich in zusammengefasster Form für wissenschaftliche Zwecke.</p>
+      <p>Die Umfrage dauert etwa 2 Minuten.</p>
+    </div>
+    <div class="q-label" style="margin-top:18px;">Arbeiten Sie im Verkauf von Finanzprodukten / fondsgebundenen Lebensversicherungen?</div>
+    <div class="gate-actions">
+      <button type="button" class="gate-btn" data-gate="ja">Ja</button>
+      <button type="button" class="gate-btn" data-gate="nein">Nein</button>
+    </div>
+    <div class="intro-meta">Eine Verarbeitung der Antworten erfolgt ausschließlich, wenn diese Frage mit „Ja” beantwortet wird.</div>
+  </div>
+
+  <!-- ===== Hinweis bei "Nein" ===== -->
+  <div class="card exit-screen" id="exitCard" hidden>
+    <div class="exit-emoji">🙏</div>
+    <h1 style="font-size:18px;">Danke für Ihr Interesse</h1>
+    <p style="color:var(--muted); font-size:14px;">Diese Umfrage richtet sich ausschließlich an Personen, die im Verkauf von Finanzprodukten bzw. fondsgebundenen Lebensversicherungen tätig sind. Es wurden keine Daten gespeichert.</p>
+  </div>
+
+  <!-- ===== Fragebogen ===== -->
+  <form id="surveyForm" hidden></form>
+
+  <!-- ===== Danke-Bildschirm nach Absenden ===== -->
+  <div class="card thanks-screen" id="thanksCard" hidden>
+    <div class="thanks-emoji">✅</div>
+    <h1 style="font-size:18px;">Vielen Dank für Ihre Teilnahme!</h1>
+    <p style="color:var(--muted); font-size:14px;">Ihre Antworten wurden anonym gespeichert und fließen in die Auswertung der Masterarbeit ein.</p>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTwE4VEb-xiix8JRMQ6z-1WUfl-vu_qgY",
+  authDomain: "masterarbeit-umfrage.firebaseapp.com",
+  projectId: "masterarbeit-umfrage",
+  storageBucket: "masterarbeit-umfrage.firebasestorage.app",
+  messagingSenderId: "86113847547",
+  appId: "1:86113847547:web:c28650e6ed2fe3ab67085e",
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ------------------------------------------------------------------
+// Fragen-Definition: jede Frage ist ein Single-Choice mit festen
+// Antwortmöglichkeiten. "key" ist der Firestore-Feldname (muss exakt
+// mit firestore.rules übereinstimmen, siehe dort die hasOnly()-Liste).
+// ------------------------------------------------------------------
+const ESG_OPTIONEN = ["0 %", "20 %", "40 %", "60 %", "80 %", "100 %"];
+const LIKERT_OPTIONEN = ["Ja", "eher ja", "eher nein", "nein"];
+const ALTER_OPTIONEN = ["18–35 Jahre", "35–50 Jahre", "50–65 Jahre", "ab 65 Jahre"];
+
+const FRAGEN = [
+  { key: "anteilAngebotenEsg", label: "Etwa wie viel Prozent Ihrer angebotenen Finanzprodukte/fondsgebundenen Lebensversicherungen entsprechen den ESG-Kriterien?", optionen: ESG_OPTIONEN },
+  { key: "anteilVerkauftEsg", label: "Etwa wie viel Prozent Ihrer verkauften Finanzprodukte/fondsgebundenen Lebensversicherungen entsprechen den ESG-Kriterien?", optionen: ESG_OPTIONEN },
+  { key: "hinweisImGespraech", label: "Weisen Sie im Beratungs- und Verkaufsgespräch auf diese Möglichkeit der Investition in ESG-Fonds explizit hin?", optionen: LIKERT_OPTIONEN },
+  { key: "kundenFragenVonSichAus", label: "Fragen Kunden von sich aus explizit nach dieser Form der Anlage?", optionen: LIKERT_OPTIONEN },
+  { key: "wenigerRentabelEingeschaetzt", label: "Sind Finanzprodukte/fondsgebundene Lebensversicherungen nach ESG-Kriterien Ihrer Meinung nach weniger rentabel als andere?", optionen: LIKERT_OPTIONEN },
+  { key: "kundenVerzichtenAufRendite", label: "Sind Kunden bereit, auf (eine kleine) Renditedifferenz zu verzichten, wenn sie dadurch mehr nachhaltige Produkte erwerben?", optionen: LIKERT_OPTIONEN },
+  { key: "kundenInteressiertAnQualitaet", label: "Sind Kunden Ihrer Erfahrung nach an der „Qualität” der Nachhaltigkeit der Produkte interessiert, das heißt, fragen sie nach, welche ESG-Kriterien ein Produkt erfüllt (z. B. Umweltschutz, Kinderarbeit)?", optionen: LIKERT_OPTIONEN },
+  { key: "kundenKritischeFragenGreenwashing", label: "Stellen Kunden kritische Fragen hinsichtlich der Einhaltung dieser Kriterien, z. B. hinsichtlich „Greenwashing”?", optionen: LIKERT_OPTIONEN },
+  { key: "zielgruppeAlter", label: "Welche Zielgruppe nach Alterskohorten zeigt vermehrt Interesse an diesen Produkten?", optionen: ALTER_OPTIONEN },
+];
+
+const antworten = {};
+
+const introCard = document.getElementById("introCard");
+const exitCard = document.getElementById("exitCard");
+const form = document.getElementById("surveyForm");
+const thanksCard = document.getElementById("thanksCard");
+
+document.querySelectorAll("[data-gate]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("[data-gate]").forEach((b) => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    const ja = btn.dataset.gate === "ja";
+    setTimeout(() => {
+      introCard.hidden = true;
+      if (ja) {
+        renderForm();
+        form.hidden = false;
+      } else {
+        exitCard.hidden = false;
+      }
+    }, 150);
+  });
+});
+
+function renderForm() {
+  form.innerHTML = FRAGEN.map((f, i) => `
+    <div class="q-card" data-qkey="${f.key}">
+      <div class="q-label">${i + 1}. ${f.label}</div>
+      <div class="q-opts">
+        ${f.optionen.map((opt) => `<button type="button" class="opt-btn" data-key="${f.key}" data-val="${escAttr(opt)}">${escHtml(opt)}</button>`).join("")}
+      </div>
+      <div class="q-missing-hint">Bitte eine Antwort auswählen.</div>
+    </div>
+  `).join("") + `
+    <div class="submit-row">
+      <button type="submit" class="btn-submit" id="submitBtn">Antworten absenden</button>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+  `;
+
+  form.querySelectorAll(".opt-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const { key, val } = btn.dataset;
+      antworten[key] = val;
+      const qCard = btn.closest(".q-card");
+      qCard.querySelectorAll(".opt-btn").forEach((b) => b.classList.toggle("selected", b.dataset.val === val));
+      qCard.classList.remove("q-missing");
+    });
+  });
+
+  form.addEventListener("submit", onSubmit);
+}
+
+async function onSubmit(ev) {
+  ev.preventDefault();
+  const statusMsg = document.getElementById("statusMsg");
+  const submitBtn = document.getElementById("submitBtn");
+  statusMsg.textContent = "";
+  statusMsg.classList.remove("err");
+
+  // Alle Fragen sind Pflicht — fehlende markieren statt stumm abzusenden.
+  let fehlt = false;
+  FRAGEN.forEach((f) => {
+    const qCard = form.querySelector(`[data-qkey="${f.key}"]`);
+    if (!antworten[f.key]) {
+      qCard.classList.add("q-missing");
+      fehlt = true;
+    }
+  });
+  if (fehlt) {
+    statusMsg.textContent = "Bitte alle Fragen beantworten.";
+    statusMsg.classList.add("err");
+    form.querySelector(".q-missing").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  submitBtn.disabled = true;
+  statusMsg.textContent = "Wird gesendet …";
+  try {
+    const payload = {};
+    FRAGEN.forEach((f) => { payload[f.key] = antworten[f.key]; });
+    payload.createdAt = serverTimestamp();
+    await addDoc(collection(db, "antworten"), payload);
+    form.hidden = true;
+    thanksCard.hidden = false;
+  } catch (e) {
+    console.error(e);
+    statusMsg.textContent = "Senden fehlgeschlagen: " + e.message;
+    statusMsg.classList.add("err");
+    submitBtn.disabled = false;
+  }
+}
+
+function escHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function escAttr(s) { return escHtml(s); }
+</script>
+</body>
+</html>

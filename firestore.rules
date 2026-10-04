@@ -1,0 +1,59 @@
+rules_version = '2';
+
+// ============================================================
+// Firestore-Sicherheitsregeln — Masterarbeit-Umfrage
+// ============================================================
+//
+// Funktionsprinzip, bewusst anders als beim Familien-Dashboard:
+// - "create" ist für JEDEN offen, ganz ohne Anmeldung — damit Teilnehmende
+//   die Umfrage ohne jede Hürde (kein Login, kein "Anonym anmelden") direkt
+//   ausfüllen können. Jeder neue Eintrag wird streng auf genau die
+//   erlaubten Felder und genau die vorgegebenen Antwortmöglichkeiten
+//   geprüft — alles andere wird abgelehnt.
+// - "read" ist NICHT öffentlich (sonst könnte jeder, der die Umfrage-Seite
+//   öffnet, auch alle bereits abgegebenen Antworten einsehen). Lesen ist
+//   nur für angemeldete Nutzer erlaubt — das nutzt die Auswertungsansicht
+//   im Familien-Dashboard, die sich dafür separat (anonym) anmeldet.
+// - "update"/"delete" sind komplett gesperrt: einmal abgeschickte
+//   Antworten lassen sich nicht mehr nachträglich verändern oder löschen.
+//
+// Die Antworten selbst enthalten keinerlei personenbezogene Daten (kein
+// Name, keine E-Mail, keine IP) — nur die Mehrfachauswahl-Antworten auf
+// die neun inhaltlichen Fragen plus einen Server-Zeitstempel.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /antworten/{id} {
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'anteilAngebotenEsg', 'anteilVerkauftEsg', 'hinweisImGespraech',
+          'kundenFragenVonSichAus', 'wenigerRentabelEingeschaetzt',
+          'kundenVerzichtenAufRendite', 'kundenInteressiertAnQualitaet',
+          'kundenKritischeFragenGreenwashing', 'zielgruppeAlter', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'anteilAngebotenEsg', 'anteilVerkauftEsg', 'hinweisImGespraech',
+          'kundenFragenVonSichAus', 'wenigerRentabelEingeschaetzt',
+          'kundenVerzichtenAufRendite', 'kundenInteressiertAnQualitaet',
+          'kundenKritischeFragenGreenwashing', 'zielgruppeAlter', 'createdAt'
+        ])
+        && request.resource.data.anteilAngebotenEsg in ['0 %','20 %','40 %','60 %','80 %','100 %']
+        && request.resource.data.anteilVerkauftEsg in ['0 %','20 %','40 %','60 %','80 %','100 %']
+        && request.resource.data.hinweisImGespraech in ['Ja','eher ja','eher nein','nein']
+        && request.resource.data.kundenFragenVonSichAus in ['Ja','eher ja','eher nein','nein']
+        && request.resource.data.wenigerRentabelEingeschaetzt in ['Ja','eher ja','eher nein','nein']
+        && request.resource.data.kundenVerzichtenAufRendite in ['Ja','eher ja','eher nein','nein']
+        && request.resource.data.kundenInteressiertAnQualitaet in ['Ja','eher ja','eher nein','nein']
+        && request.resource.data.kundenKritischeFragenGreenwashing in ['Ja','eher ja','eher nein','nein']
+        && request.resource.data.zielgruppeAlter in ['18–35 Jahre','35–50 Jahre','50–65 Jahre','ab 65 Jahre']
+        && request.resource.data.createdAt == request.time;
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // Alles andere: sicherheitshalber gesperrt.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
